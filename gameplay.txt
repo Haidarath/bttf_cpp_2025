@@ -1,0 +1,104 @@
+BTTF CPP - TRACK GAMEPLAY
+
+Context_
+You previously worked on the R-Type project's gameplay track. This rattrapage focuses
+on demonstrating intermediate game development skills through systems design and
+implementation.
+
+Objective
+Build a single-player top-down shooter with polished core mechanics, UI, and game
+Systems.
+
+01 Requirements_
+
+Core Mechanics_
+Player Controls
+• Movement: WASD for exemple
+• Aiming: Mouse position (player looks toward cursor)
+• Shooting: Mouse button
+• Weapon Swap: Mouse input (scroll wheel, right-click, or similar)
+• Reload: R key (or designated key)
+• Pickup: Designated key when near item
+Document your input bindings in the README.
+
+Weapon System_
+Critical Design Requirement: Weapons must be implemented using object-oriented
+abstraction (interface/base class with derived types). Hardcoded weapon types are not
+Acceptable.
+
+Weapon System_
+Requirements:
+• Generic weapon interface supporting multiple weapon types
+• Minimum 2 distinct weapon types with fundamentally different mechanics
+• NOT acceptable: "pistol with 10 ammo vs rifle with 30 ammo" (just stat differences)
+• Acceptable examples: hitscan vs projectile, single-shot vs area-of-effect, melee
+vs ranged, charge-up vs instant fire
+• Each weapon must serve a different tactical purpose in gameplay
+• If unsure, ask an AI to propose mechanically distinct weapon types for topdown shooters
+
+Weapon System_
+Ammo system:
+• Current ammo, max ammo, reload functionality
+• Cannot shoot when ammo depleted
+• Weapon pickup system: weapons spawn on ground, player collects them
+• Weapon swapping (whether inventory-based or direct swap is your design choice)
+
+Enemy System_
+Requirements:
+• Just one enemy type with scalable behavior
+• Can be reused as boss with modifications
+• Increased health
+• Different weapon/attack pattern
+• Phase transitions (optional but recommended)
+Example: Basic enemy shoots single projectiles; boss version has 3x health and shoots
+spread patterns.
+
+Collision System_
+Collision Detection:
+• Player-to-wall collision
+• Projectile-to-wall collision
+• Projectile-to-enemy collision
+• Player-to-pickup collision (weapon acquisition)
+
+UI Requirements_
+Main Menu:
+• Start Game button
+• Settings button
+• Quit button
+
+Settings Menu:
+• Volume control (slider or increment/decrement)
+• Fullscreen toggle
+In-Game HUD:
+• Current ammo display
+• Health bar or health counter
+• Current weapon indicator
+• UI must be functional and readable (polish not required, but avoid debug-style text dumps)
+
+02 Technical Constraints_
+
+Engine/Library Choice_
+You may use one of the following:
+
+• Your team's R-Type engine (if functional)
+• Well-documented C/C++ game libraries (recommended if you want to focus on gameplay rather
+than building infrastructure)
+• Raylib (C library - good graphics support, simple API)
+• CSFML (C library - more low-level control)
+• EnTT (C++ ECS library - if you want ECS without building from scratch)
+• SDL2 (C library - minimal framework, maximum control)
+• Other C/C++ framework (must be approved by teacher first)
+Language Requirement: All code must follow C++ paradigms and style, even when
+using C libraries. If using a C library (Raylib, CSFML, SDL2), you must write C++
+wrappers around the C API - no raw C-style code in your gameplay logic.
+
+Validation_
+Your project will be evaluated through:
+
+• Gameplay demonstration: Teacher will play the game
+• Code review: Weapon system abstraction, collision implementation, settings persistence
+• Feature checklist: All required systems must be functional
+
+Thanks_
+
+

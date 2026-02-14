@@ -1,0 +1,72 @@
+BTTF CPP - TRACK ENGINE
+
+Context_
+You previously worked on the R-Type project's engine track. This BTTF focuses on
+
+extending your ECS architecture with core engine functionality.
+You are required to implement additional functionalities to your engine. Your specifications must be
+challenging enough to be validated by your teacher. Only then can you start working.
+
+01 Option 1 - JSON_
+
+Specifications_
+Scene Serialization System
+• Build a system to save and load complete scene states to/from disk.
+
+Requirements:
+•
+•
+•
+•
+•
+•
+
+Serialize all entities and their components to JSON format
+Load scenes from JSON files, reconstructing entities and components
+Must handle ALL component types you implemented in your engine (not just a
+subset)
+Human-readable JSON output format
+Use nlohmann JSON library for C++ (https://github.com/nlohmann/json)
+
+Specifications_
+Test Program
+You must write a separate small test program that:
+• Loads a scene from a JSON file
+• Runs the ECS system (executes your systems on the loaded entities)
+• Prints relevant component values to console to show the ECS is working
+You will demonstrate by: running the test program, manually editing the JSON file,
+relaunching, and showing the ECS correctly processes the modified data.
+
+02 Option 2 - Custom_
+
+Specifications_
+Alternative Feature(s) (Teacher Approval Required)
+• Discuss with your teacher to determine appropriate additional feature(s) to implement. The
+specifications agreed upon must be challenging enough.
+
+Technical Constraints
+•
+•
+•
+•
+
+C++ implementation
+Integration with your existing ECS architecture
+No external frameworks for core functionality (JSON parsing libraries allowed)
+Code must compile and run
+
+Specifications_
+Features Ideas
+- Spatial partitioning (quadtree or grid) replacing brute-force collision measurable performance
+improvement
+- Entity prefab system spawn pre-configured entities from config files, no hardcoding
+- Scene graph parent/child entity relationships, child transforms relative to parent (if parent moves
+child does as well)
+- Event system entities emit typed events, systems subscribe and react to decouples game logic
+from engine (event listeners and invokers, think about lambdas)
+- Basic engine ECS architecture, entity CRUD, Systems & Components
+- And more...
+
+Thanks_
+
+
