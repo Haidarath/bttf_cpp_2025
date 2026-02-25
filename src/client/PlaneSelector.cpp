@@ -206,8 +206,19 @@ void PlaneSelector::draw(sf::RenderWindow &window) {
     window.draw(choosePlaneSprite);
     
     // Dessiner les deux avions
-    for (const auto &plane : planes) {
+    for (auto &plane : planes) {
         window.draw(plane.sprite);
+    }
+}
+
+void PlaneSelector::update(float mouseX, float mouseY) {
+    sf::Vector2f mousePos(mouseX, mouseY);
+    for (auto &plane : planes) {
+        if (plane.clickZone.contains(mousePos)) {
+            plane.sprite.setScale(0.25f, 0.25f); // Agrandir au survol
+        } else {
+            plane.sprite.setScale(0.2f, 0.2f);
+        }
     }
 }
 

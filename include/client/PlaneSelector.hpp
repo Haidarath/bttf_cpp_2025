@@ -17,6 +17,7 @@ public:
     PlaneSelector();
     
     void draw(sf::RenderWindow &window);
+    void update(float mouseX, float mouseY);
     bool handleClick(float mouseX, float mouseY, std::string &selectedPlane);
     
 private:
