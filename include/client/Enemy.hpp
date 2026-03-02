@@ -37,6 +37,9 @@ public:
     
     // Inflige des dégâts à l'ennemi
     void takeDamage(int damage);
+    
+    // Déplace manuellement l'ennemi (ex: attraction)
+    void move(float dx, float dy);
 
     int getPoints() const { return stats.points; }
     int getCurrentHp() const { return currentHp; }

@@ -1,5 +1,5 @@
 NAME = game
-SRC = src/client/main.cpp src/client/Player.cpp src/client/Background.cpp src/client/Level.cpp src/client/PlaneSelector.cpp src/client/MainMenu.cpp src/client/Enemy.cpp src/client/GameOverMenu.cpp src/client/Bullet.cpp src/client/MissionObjective.cpp src/client/WinMenu.cpp src/client/HelpMenu.cpp src/client/Sounds.cpp
+SRC = src/client/main.cpp src/client/Player.cpp src/client/Background.cpp src/client/Level.cpp src/client/PlaneSelector.cpp src/client/MainMenu.cpp src/client/Enemy.cpp src/client/GameOverMenu.cpp src/client/Bullet.cpp src/client/MissionObjective.cpp src/client/WinMenu.cpp src/client/HelpMenu.cpp src/client/Sounds.cpp src/client/SettingsMenu.cpp src/client/GravityBubble.cpp
 OBJ = $(SRC:.cpp=.o)
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Werror -Iinclude -Iinclude/client

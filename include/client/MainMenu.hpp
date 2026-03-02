@@ -9,9 +9,12 @@ enum class MenuAction {
     None,
     Play,
     Help,
+    Settings,
+    Exit,
     VolumeUp,
     VolumeDown,
-    Level
+    Level,
+    ToggleFullscreen
 };
 
 struct MenuButton {

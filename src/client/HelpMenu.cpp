@@ -22,7 +22,7 @@ void HelpMenu::setupContent() {
     // Titre
     titleText.setFont(font);
     titleText.setString("GUIDE DE JEU");
-    titleText.setCharacterSize(80);
+    titleText.setCharacterSize(60);
     titleText.setFillColor(sf::Color::Yellow);
     titleText.setStyle(sf::Text::Bold);
     sf::FloatRect titleBounds = titleText.getLocalBounds();
@@ -32,26 +32,33 @@ void HelpMenu::setupContent() {
     // Contenu de l'aide
     std::vector<std::string> lines = {
         "COMMENT JOUER :",
-        "- Deplacement : Touches ARROW (Haut, Bas, Gauche, Droite)",
+        "- Deplacement : Touches DIRECTIONNELLES (Haut, Bas, Gauche, Droite)",
         "- Viser : Deplacez la SOURIS, l'avion suit le curseur",
-        "- Tirer : CLIC GAUCHE de la souris",
+        "- Tirer : CLIC GAUCHE sur l'ennemi",
         "",
         "VOTRE MISSION :",
         "- Survivez aux vagues d'ennemis (Drones et Tourelles)",
-        "- Attention : Chaque ennemi a 5 balles, puis ils vous foncent dessus !",
-        "- Detruisez le BOSS final pour gagner le niveau",
+        "- Attention : Chaque ennemi a  2 balles, puis ils vous foncent dessus !",
+        "- Attention : Le Boss a 1000 balles, et il bouge du haut vers le bas",
+        "- Detruisez le BOSS final et ayez 200 points pour gagner le niveau",
         "",
         "BUT DU JEU :",
         "- Atteignez le score requis et eliminez la menace ennemie",
-        "- Ne perdez pas toutes vos vies (vous commencez avec 10)"
+        "- Ne perdez pas toutes vos vies (vous commencez avec 10)",
+        "",
+        "BONUS :",
+        "- Coeurs : Apparaissent aleatoirement et rendent 3 VIES au contact",
+        "- Boule de feu : Transforme vos tirs en SUPER BALLES (tue en 1 coup)",
+        "- Touche B : Cree une bulle (max 3) qui ATTIRE les ennemis. Tirez dessus pour tout exploser !"
     };
 
-    float startY = 250.f;
+    float startY = 180.f;  
+    float lineSpacing = 38.f; 
     for (const auto& line : lines) {
         sf::Text text;
         text.setFont(font);
         text.setString(line);
-        text.setCharacterSize(35);
+        text.setCharacterSize(22); 
         
         if (line.find(":") != std::string::npos && line.find("-") == std::string::npos) {
             text.setFillColor(sf::Color::Cyan);
@@ -60,9 +67,13 @@ void HelpMenu::setupContent() {
             text.setFillColor(sf::Color::White);
         }
 
-        text.setPosition(400.f, startY);
+        // Centrer chaque ligne horizontalement
+        sf::FloatRect textBounds = text.getLocalBounds();
+        text.setOrigin(textBounds.width / 2.f, 0.f);
+        text.setPosition(1920.f / 2.f, startY);
+        
         helpLines.push_back(text);
-        startY += 50.f;
+        startY += lineSpacing;
     }
 
     // Bouton Retour

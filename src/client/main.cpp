@@ -6,6 +6,7 @@
 #include "client/GameOverMenu.hpp"
 #include "client/WinMenu.hpp"
 #include "client/HelpMenu.hpp"
+#include "client/SettingsMenu.hpp"
 #include "client/Sounds.hpp"
 #include <iostream>
 #include <memory>
@@ -17,7 +18,8 @@ enum class GameState {
     Level1,
     GameOver,
     Win,
-    Help
+    Help,
+    Settings
 };
 
 int main()
@@ -41,6 +43,8 @@ int main()
         std::unique_ptr<GameOverMenu> gameOverMenu = nullptr; 
         std::unique_ptr<WinMenu> winMenu = nullptr; 
         std::unique_ptr<HelpMenu> helpMenu = nullptr;
+        std::unique_ptr<SettingsMenu> settingsMenu = nullptr;
+        bool isFullscreen = false;
         std::string selectedPlaneTexture = "";
 
         std::cout << "Entering main loop..." << std::endl;
@@ -70,6 +74,9 @@ int main()
                     } else if (currentState == GameState::Win && winMenu) {
                         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                         winMenu->handleMouseMove(mousePos.x, mousePos.y);
+                    } else if (currentState == GameState::Settings && settingsMenu) {
+                        sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                        settingsMenu->handleMouseMove(mousePos.x, mousePos.y);
                     } else if (currentState == GameState::Help && helpMenu) {
                         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                         helpMenu->handleMouseMove(mousePos.x, mousePos.y);
@@ -107,6 +114,37 @@ int main()
                                 currentState = GameState::Help;
                                 helpMenu = std::make_unique<HelpMenu>();
                                 std::cout << "Switching to Help!" << std::endl;
+                            } else if (action == MenuAction::Settings) {
+                                currentState = GameState::Settings;
+                                settingsMenu = std::make_unique<SettingsMenu>();
+                                std::cout << "Switching to Settings!" << std::endl;
+                            } else if (action == MenuAction::Exit) {
+                                std::cout << "Exiting from Main Menu!" << std::endl;
+                                window.close();
+                            }
+                        }
+                        else if (currentState == GameState::Settings && settingsMenu) {
+                            MenuAction action = settingsMenu->handleClick(mousePos.x, mousePos.y);
+                            
+                            if (action == MenuAction::VolumeUp) {
+                                std::cout << "Volume Up in Settings" << std::endl;
+                                Sounds::getInstance().adjustVolume(10.f);
+                            } else if (action == MenuAction::VolumeDown) {
+                                std::cout << "Volume Down in Settings" << std::endl;
+                                Sounds::getInstance().adjustVolume(-10.f);
+                            } else if (action == MenuAction::ToggleFullscreen) {
+                                isFullscreen = !isFullscreen;
+                                if (isFullscreen) {
+                                    window.create(sf::VideoMode(1920, 1080), "BTTF Shooter", sf::Style::Fullscreen);
+                                } else {
+                                    window.create(sf::VideoMode(1920, 1080), "BTTF Shooter", sf::Style::Titlebar | sf::Style::Close);
+                                }
+                                window.setFramerateLimit(60);
+                                std::cout << "Toggled fullscreen: " << isFullscreen << std::endl;
+                            } else if (action == MenuAction::None) {
+                                // BACK clicked
+                                Sounds::getInstance().playSound("BACK");
+                                currentState = GameState::MainMenu;
                             }
                         }
                         else if (currentState == GameState::Map) {
@@ -208,6 +246,9 @@ int main()
             }
             else if (currentState == GameState::Help && helpMenu) {
                 helpMenu->draw(window);
+            }
+            else if (currentState == GameState::Settings && settingsMenu) {
+                settingsMenu->draw(window);
             }
 
             window.display();

@@ -29,6 +29,12 @@ Level::Level(const std::string &bgTexture, const std::string &playerTexture, int
         hpText.setCharacterSize(40);
         hpText.setFillColor(sf::Color::Red);
         hpText.setPosition(50.f, 100.f);
+
+        // Texte pour les bulles de gravité
+        bubbleText.setFont(font);
+        bubbleText.setCharacterSize(40);
+        bubbleText.setFillColor(sf::Color::Blue);
+        bubbleText.setPosition(50.f, 160.f);
     }
     player.setScale(0.2f);
 
@@ -100,7 +106,7 @@ void Level::spawnEnemy() {
 
 void Level::spawnBoss() {
     std::cout << "ALERTE : BOSS EN APPROCHE !" << std::endl;
-    EnemyStats bossStats = {"BOSS", 150, 40.f, 1000, 1.5f}; // Le boss tire bcp moins vite (était 0.5)
+    EnemyStats bossStats = {"BOSS", 150, 40.f, 1000, 0.5f}; // Le boss tire toutes les 0.5s maintenant
     // Le boss apparaît à droite et avance vers la gauche
     auto boss = std::make_unique<Enemy>("sprites/enemies/boss.png", bossStats, 1920.f + 200.f, 1080.f / 2.f);
     enemies.push_back(std::move(boss));
@@ -125,14 +131,33 @@ void Level::update(float deltaTime, sf::RenderWindow &window) {
     sf::Vector2f currentCenter = camera.getCenter();
     
     // Interpolation linéaire pour un mouvement de caméra plus "cinématique"
-    float lerpStrength = 0.05f; 
+    float lerpStrength = 0.05f; // Force de lerp (5%)
+    //currentCenter.x + (playerPos.x - currentCenter.x) * lerpStrength
+    //C'est la formule mathématique du LERP :
+    //Position=Actuelle+(Cible−Actuelle)×Force
+    //Au lieu d'aller directement sur le joueur, la caméra ne parcourt que 5% (0.05) 
+    // de la distance qui la sépare de lui à chaque image. Cela crée un mouvement de lissage très agréable.
     camera.setCenter(
         currentCenter.x + (playerPos.x - currentCenter.x) * lerpStrength,
         currentCenter.y + (playerPos.y - currentCenter.y) * lerpStrength
+
     );
     
     // Le fond défile maintenant en fonction de la position du joueur pour créer un effet de profondeur
     background.updateOffset(playerPos.x, playerPos.y);
+
+    // --- GESTION DE LA BULLE DE GRAVITÉ (Touche B) ---
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::B) && !gravityBubble && gravityBubblesLeft > 0) {
+        // Apparaît un peu devant le joueur (300 pixels à droite)
+        gravityBubble = std::make_unique<GravityBubble>(playerPos.x + 300.f, playerPos.y);
+        gravityBubblesLeft--;
+        Sounds::getInstance().playSound("PLAY"); // Petit son de spawn
+    }
+
+    if (gravityBubble) {
+        gravityBubble->update(deltaTime);
+        gravityBubble->attractEnemies(enemies, deltaTime);
+    }
     
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
         auto bullet = player.shoot();
@@ -145,6 +170,29 @@ void Level::update(float deltaTime, sf::RenderWindow &window) {
     // Mise à jour des projectiles
     for (auto it = bullets.begin(); it != bullets.end();) {
         (*it)->update(deltaTime);
+        
+        // --- NOUVEAU : Collision balle joueur -> Bulle de Gravité ---
+        if (gravityBubble && gravityBubble->checkCollision((*it)->getBounds())) {
+            std::cout << "Bulle explosée !" << std::endl;
+            gravityBubble->Detonate(enemies);
+            
+            // Effet d'explosion visuel pour la bulle
+            ExplosionEffect exp;
+            exp.sprite.setTexture(explodeTexture);
+            sf::FloatRect bounds = exp.sprite.getLocalBounds();
+            exp.sprite.setOrigin(bounds.width/2.f, bounds.height/2.f);
+            exp.sprite.setPosition(gravityBubble->getPosition());
+            exp.sprite.setScale(2.0f, 2.0f); // Grosse explosion
+            exp.lifetime = 0.6f;
+            explosions.push_back(exp);
+            
+            Sounds::getInstance().playSound("EXPLOSION");
+            
+            gravityBubble.reset();
+            it = bullets.erase(it);
+            continue; 
+        }
+
         if ((*it)->isOffScreen()) {
             it = bullets.erase(it);
         } else {
@@ -152,9 +200,10 @@ void Level::update(float deltaTime, sf::RenderWindow &window) {
         }
     }
 
-    // Mise à jour du texte des vies
+    // Mise à jour du texte
     if (fontLoaded) {
         hpText.setString("VIES : " + std::to_string(player.getHp()));
+        bubbleText.setString("BULLES (B) : " + std::to_string(gravityBubblesLeft));
     }
 
     // On fait apparaître un ennemi si le temps est écoulé
@@ -222,18 +271,29 @@ void Level::update(float deltaTime, sf::RenderWindow &window) {
 
     // Mise à jour chaque ennemi, collisions et TIR
     bool someoneFiredThisFrame = false;
-    float globalShootDelay = 8.0f; // Très lent pour être zen
+    float globalShootDelay = 3.0f; // Un peu plus actif mais reste raisonnable
 
     for (auto it = enemies.begin(); it != enemies.end();) {
         (*it)->update(deltaTime, playerPos);
         
         // --- NOUVEAU : Tentative de tir de l'ennemi (UN SEUL À LA FOIS) ---
-        if (!someoneFiredThisFrame && globalEnemyShootClock.getElapsedTime().asSeconds() > globalShootDelay) {
+        // --- Tir de l'ennemi ---
+        // Le boss (points >= 1000) tire indépendamment du délai global
+        bool isBoss = ((*it)->getPoints() >= 1000);
+        bool canShoot = false;
+        
+        if (isBoss) {
+            canShoot = true;
+        } else if (!someoneFiredThisFrame && globalEnemyShootClock.getElapsedTime().asSeconds() > globalShootDelay) {
+            canShoot = true;
+            someoneFiredThisFrame = true;
+            globalEnemyShootClock.restart();
+        }
+
+        if (canShoot) {
             auto eBullet = (*it)->shoot();
             if (eBullet) {
                 enemyBullets.push_back(std::move(eBullet));
-                globalEnemyShootClock.restart(); // On bloque les autres tirs pour 0.4s
-                someoneFiredThisFrame = true;
             }
         }
 
@@ -355,6 +415,10 @@ void Level::draw(sf::RenderWindow &window) {
         enemy->draw(window);
     }
     
+    if (gravityBubble) {
+        gravityBubble->draw(window);
+    }
+    
     for (auto &bullet : bullets) {
         bullet->draw(window);
     }
@@ -385,5 +449,6 @@ void Level::draw(sf::RenderWindow &window) {
     if (fontLoaded) {
         window.draw(levelTitleText);
         window.draw(hpText);
+        window.draw(bubbleText);
     }
 }

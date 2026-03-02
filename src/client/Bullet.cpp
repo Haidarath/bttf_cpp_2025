@@ -5,7 +5,7 @@ Bullet::Bullet(float startX, float startY, float angle, float customSpeed, sf::C
     : speed(customSpeed) 
 {
     usesTexture = false;
-    shape.setSize(sf::Vector2f(15.f, 5.f)); 
+    shape.setSize(sf::Vector2f(12.f, 12.f)); 
     shape.setFillColor(color);
     shape.setOrigin(7.5f, 2.5f);
     shape.setPosition(startX, startY);
@@ -42,7 +42,7 @@ void Bullet::draw(sf::RenderWindow &window) {
     if (usesTexture) {
         window.draw(sprite);
     } else {
-        window.draw(shape);
+        window.draw(shape); 
     }
 }
 

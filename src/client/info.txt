@@ -1,0 +1,13 @@
+Info sur mes fonction :
+
+Dans bullet.cpp :
+J'ai une fonction qui permet de créer la forme de la balle 
+(Bullet::Bullet(float startX, float startY, float angle, float customSpeed, sf::Color color)  : speed(customSpeed)),
+et une fonction qui permet de mettre à jour la balle, en fesant la velocité(la direction de la balle) fois le delta time
+(le temps écoulé depuis la dernière frame).J'ai aussi une fonction qui permet de dessiner la balle (draw). j'ai aussi une 
+fonction qui m'aide à savoir si la balle est hors de l'écran ou non (isOffScreen) depuis 3seconde, afin de mieux géré la mémoire,
+et la dernière fonction qui permet de créer la balle avec une texture
+(Bullet::Bullet(float startX, float startY, float angle, float customSpeed, const sf::Texture& texture)).
+
+
+Dans background.cpp :

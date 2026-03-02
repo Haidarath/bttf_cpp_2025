@@ -52,8 +52,9 @@ void Enemy::update(float deltaTime, const sf::Vector2f& targetPos) {
         float verticalMovement = std::sin(movementTimer * 2.f) * 150.f * deltaTime;
         sprite.move(0.f, verticalMovement);
         
-        // On remet la rotation fixe vers la gauche
-        sprite.setRotation(180.f + 90.f);
+        // Le boss regarde le joueur
+        float angle = std::atan2(direction.y, direction.x) * 180 / 3.14159f;
+        sprite.setRotation(angle + 90.f);
     } else {
         // Les ennemis normaux foncent sur le joueur de tous les sens
         if (distance > 1.5f) {
@@ -126,3 +127,10 @@ void Enemy::takeDamage(int damage) {
         std::cout << "Ennemi " << stats.name << " detruit ! Points : " << stats.points << std::endl;
     }
 }
+
+void Enemy::move(float dx, float dy) {
+    if (alive) {
+        sprite.move(dx, dy);
+    }
+}
+

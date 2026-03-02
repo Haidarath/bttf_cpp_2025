@@ -10,6 +10,7 @@
 #include "client/Bullet.hpp"
 #include "client/MissionObjective.hpp"
 #include "client/PowerUp.hpp"
+#include "client/GravityBubble.hpp"
 
 class Level {
 public:
@@ -37,6 +38,7 @@ private:
     
     sf::Text levelTitleText;
     sf::Text hpText;
+    sf::Text bubbleText;
     sf::Font font;
     bool fontLoaded;
     
@@ -74,6 +76,10 @@ private:
     sf::Texture lifeItemTexture;
     int lifeSpawnsLeft = 3;
     sf::Clock lifeSpawnClock;
+
+    // Bulle de gravité (Touche B)
+    std::unique_ptr<GravityBubble> gravityBubble;
+    int gravityBubblesLeft = 3;
 };
 
 #endif // LEVEL_HPP
