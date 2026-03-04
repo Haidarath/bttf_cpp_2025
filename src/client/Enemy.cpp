@@ -54,7 +54,7 @@ void Enemy::update(float deltaTime, const sf::Vector2f& targetPos) {
         
         // Le boss regarde le joueur
         float angle = std::atan2(direction.y, direction.x) * 180 / 3.14159f;
-        sprite.setRotation(angle + 90.f);
+        sprite.setRotation(angle);
     } else {
         // Les ennemis normaux foncent sur le joueur de tous les sens
         if (distance > 1.5f) {
@@ -64,7 +64,7 @@ void Enemy::update(float deltaTime, const sf::Vector2f& targetPos) {
             
             // Regarder le joueur
             float angle = std::atan2(direction.y, direction.x) * 180 / 3.14159f;
-            sprite.setRotation(angle + 90.f);
+            sprite.setRotation(angle);
         }
     }
     // Si l'ennemi est vraiment trop loin du joueur (ex: le joueur s'est enfui), on le recycle
@@ -83,16 +83,16 @@ std::unique_ptr<Bullet> Enemy::shoot() {
         bulletsRemaining--; // On retire une balle
         
         sf::Vector2f pos = sprite.getPosition();
-        float angle = sprite.getRotation() - 90.f; // Angle réel de tir (compensation offset)
+        float angle = sprite.getRotation(); // L'image pointe vers la droite (0 deg) par défaut
         float rad = angle * 3.14159f / 180.f;
         
-        // Spawn au nez de l'ennemi
-        float offset = 40.f;
+        // Spawn au "nez" de l'ennemi (on ajuste l'offset selon la taille du sprite)
+        float offset = 50.f; 
         pos.x += std::cos(rad) * offset;
         pos.y += std::sin(rad) * offset;
         
-        // On crée un projectile qui part de l'ennemi dans sa direction actuelle (ROUGE pour les ennemis)
-        auto bullet = std::make_unique<Bullet>(pos.x, pos.y, angle, 200.f, sf::Color::Red);
+        // Créer la balle (si elle sort toujours de côté, essayez de changer 'angle' par 'sprite.getRotation()')
+        auto bullet = std::make_unique<Bullet>(pos.x, pos.y, angle, 400.f, sf::Color::Red);
         return bullet;
     }
     return nullptr;

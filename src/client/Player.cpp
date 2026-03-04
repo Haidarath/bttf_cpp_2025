@@ -69,15 +69,15 @@ void Player::handleInput(const sf::Vector2f& mousePos) {
     sf::Vector2f currentPos = sprite.getPosition();
     sf::Vector2f aimDir = mousePos - currentPos;
     float angle = std::atan2(aimDir.y, aimDir.x) * 180 / 3.14159f;
-    sprite.setRotation(angle + 90.f); // Plus d'offset, l'image pointe vers la droite par défaut
+    sprite.setRotation(angle); 
 }
 
 std::unique_ptr<Bullet> Player::shoot() {
-    float cooldown = hasForceActive ? 0.4f : 0.2f; // Plus lent si force active car dévastateur
+    float cooldown = hasForceActive ? 0.4f : 0.2f; 
     if (shootClock.getElapsedTime().asSeconds() > cooldown) {
         shootClock.restart();
         sf::Vector2f pos = sprite.getPosition();
-        float angle = sprite.getRotation() - 90.f; // Angle de visée réel compensant l'offset image
+        float angle = sprite.getRotation(); 
         float rad = angle * 3.14159f / 180.f;
         
         // Spawn au "sommet" (le nez)
