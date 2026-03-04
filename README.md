@@ -1,10 +1,10 @@
-# BTTF Shooter 🚀
+# BTTF Shooter 
 
 **BTTF Shooter** est un jeu de tir (Shoot 'em up) dynamique développé en **C++** utilisant la bibliothèque **SFML**. Plongez dans des combats intenses, gérez vos ressources et utilisez des technologies futuristes pour vaincre des vagues d'ennemis et des boss redoutables.
 
 ---
 
-## ✨ Fonctionnalités Clés
+##  Fonctionnalités Clés
 
 - **Système de Combat Fluide** : Un gameplay nerveux avec une gestion précise des collisions et des projectiles.
 - **Mécanique de "Gravity Bubble"** : Déployez une bulle gravitationnelle (Touche `B`) pour attirer les ennemis et les faire exploser d'un seul coup.
@@ -16,7 +16,7 @@
 
 ---
 
-## 🎮 Commandes
+##  Commandes
 
 | Action | Commande |
 | :--- | :--- |
@@ -27,7 +27,7 @@
 
 ---
 
-## 🛠️ Installation et Compilation
+##  Installation et Compilation
 
 ### Prérequis
 - Compilateur C++ (GCC/G++)
@@ -49,7 +49,7 @@ Une fois compilé, lancez le binaire généré :
 
 ---
 
-## 🏗️ Architecture Technique
+## Architecture Technique
 
 Le projet suit une architecture orientée objet modulaire :
 
@@ -61,7 +61,7 @@ Le projet suit une architecture orientée objet modulaire :
 
 ---
 
-## 📁 Structure du Projet
+## Structure du Projet
 
 ```text
 .
@@ -74,7 +74,7 @@ Le projet suit une architecture orientée objet modulaire :
 
 ---
 
-## 🚀 À venir
+##  À venir
 - Nouveaux types d'ennemis et de patterns.
 - Progression sur plusieurs niveaux avec une difficulté croissante.
 - Système de score en ligne.
