@@ -100,7 +100,7 @@ std::unique_ptr<Bullet> Enemy::shoot() {
 
 void Enemy::draw(sf::RenderWindow &window) {
     if (alive) {
-        // Ombre portée
+
         sf::Sprite shadow = sprite;
         shadow.setColor(sf::Color(0, 0, 0, 100));
         shadow.move(8.f, 8.f);
