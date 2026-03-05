@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cmath>
 #include "client/Sounds.hpp"
+#include "client/BlasterWeapon.hpp"
+#include "client/GravityLauncherWeapon.hpp"
 
 Level::Level(const std::string &bgTexture, const std::string &playerTexture, int levelNum)
     : levelNumber(levelNum), background(bgTexture, 0.f, 0.f, true), player(playerTexture, 200.f, 1080.f / 2.f),
@@ -55,9 +57,11 @@ Level::Level(const std::string &bgTexture, const std::string &playerTexture, int
     if (!lifeItemTexture.loadFromFile("sprites/life.png")) {
         std::cerr << "Erreur: Impossible de charger sprites/life.png" << std::endl;
     }
-    lifeSpawnClock.restart();
-    
     forceSpawnClock.restart();
+
+    // Initialisation du système d'armes
+    player.addWeapon(std::make_unique<BlasterWeapon>(bullets));
+    player.addWeapon(std::make_unique<GravityLauncherWeapon>(gravityBubble));
 }
 
 void Level::spawnEnemy() {
@@ -146,25 +150,36 @@ void Level::update(float deltaTime, sf::RenderWindow &window) {
     // Le fond défile maintenant en fonction de la position du joueur pour créer un effet de profondeur
     background.updateOffset(playerPos.x, playerPos.y);
 
-    // --- GESTION DE LA BULLE DE GRAVITÉ (Touche B) ---
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::B) && !gravityBubble && gravityBubblesLeft > 0) {
-        // Apparaît un peu devant le joueur (300 pixels à droite)
-        gravityBubble = std::make_unique<GravityBubble>(playerPos.x + 300.f, playerPos.y);
-        gravityBubblesLeft--;
-        Sounds::getInstance().playSound("PLAY"); // Petit son de spawn
-    }
-
     if (gravityBubble) {
         gravityBubble->update(deltaTime);
         gravityBubble->attractEnemies(enemies, deltaTime);
     }
-    
+
+    // Tir
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        auto bullet = player.shoot();
-        if (bullet) {
-            bullets.push_back(std::move(bullet));
-            Sounds::getInstance().playSound("SHOOT");
+        player.shoot(playerPos, player.getRotation());
+    }
+
+    // Changement d'arme
+    static bool tabPressed = false;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) {
+        if (!tabPressed) {
+            player.switchWeapon();
+            tabPressed = true;
         }
+    } else {
+        tabPressed = false;
+    }
+
+    // Rechargement
+    static bool rPressed = false;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+        if (!rPressed) {
+            player.reload();
+            rPressed = true;
+        }
+    } else {
+        rPressed = false;
     }
     
     // Mise à jour des projectiles
@@ -203,7 +218,11 @@ void Level::update(float deltaTime, sf::RenderWindow &window) {
     // Mise à jour du texte
     if (fontLoaded) {
         hpText.setString("VIES : " + std::to_string(player.getHp()));
-        bubbleText.setString("BULLES (B) : " + std::to_string(gravityBubblesLeft));
+        Weapon* w = player.getCurrentWeapon();
+        if (w) {
+            std::string ammoStr = w->getIsReloading() ? "RELOADING..." : std::to_string(w->getCurrentAmmo()) + "/" + std::to_string(w->getMaxAmmo());
+            bubbleText.setString(w->getName() + " : " + ammoStr + " (TAB to swap)");
+        }
     }
 
     // On fait apparaître un ennemi si le temps est écoulé

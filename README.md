@@ -6,8 +6,9 @@
 
 ##  Fonctionnalités Clés
 
-- **Système de Combat Fluide** : Un gameplay nerveux avec une gestion précise des collisions et des projectiles.
-- **Mécanique de "Gravity Bubble"** : Déployez une bulle gravitationnelle (Touche `B`) pour attirer les ennemis et les faire exploser d'un seul coup.
+- **Système d'Armes Abstrait** : Utilisation d'une classe de base `Weapon` avec plusieurs types (Blaster, Gravity Launcher) possédant leurs propres mécaniques et munitions.
+- **Gestion des Munitions & Reload** : Système de recharge avec la touche `R` pour le Blaster.
+- **Mécanique de "Gravity Bubble"** : Utilisable avec le Launcher (Switch via `TAB`), attire les ennemis et les fait exploser.
 - **Sélection d'Appareils** : Choisissez votre vaisseau avant de partir en mission.
 - **Power-Ups** : Récupérez des bonus de **Vie** ou de **Force** sur le champ de bataille pour survivre plus longtemps.
 - **Gestion des Boss** : Affrontez des boss uniques avec des patterns d'attaque spécifiques.
@@ -20,9 +21,11 @@
 
 | Action | Commande |
 | :--- | :--- |
-| **Se déplacer** | La souris contrôle la direction et la position |
+| **Se déplacer** | `W`, `A`, `S`, `D` |
+| **Viser** | Mouvement de la Souris |
 | **Tirer** | Clique Gauche |
-| **Bulle de Gravité** | Touche `B` |
+| **Recharger** | Touche `R` |
+| **Changer d'arme** | Touche `TAB` |
 | **Pause / Retour** | Interaction via les menus |
 
 ---

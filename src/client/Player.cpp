@@ -44,6 +44,10 @@ void Player::update(float deltaTime) {
     } else {
         sprite.setColor(sf::Color(255, 255, 255, 255));
     }
+    for (auto& weapon : weapons) {
+        weapon->update(deltaTime);
+    }
+
     // Désactiver la force après 30 secondes
     if (hasForceActive && forceTimer.getElapsedTime().asSeconds() > 30.f) {
         hasForceActive = false;
@@ -55,10 +59,10 @@ void Player::handleInput(const sf::Vector2f& mousePos) {
     float speed = 6.f;
     sf::Vector2f movement(0.f, 0.f);
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) movement.y -= 1.f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) movement.y += 1.f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) movement.x -= 1.f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) movement.x += 1.f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) movement.y -= 1.f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) movement.y += 1.f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) movement.x -= 1.f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) movement.x += 1.f;
 
     if (movement.x != 0.f || movement.y != 0.f) {
         float length = std::sqrt(movement.x * movement.x + movement.y * movement.y);
@@ -72,26 +76,32 @@ void Player::handleInput(const sf::Vector2f& mousePos) {
     sprite.setRotation(angle); 
 }
 
-std::unique_ptr<Bullet> Player::shoot() {
-    float cooldown = hasForceActive ? 0.4f : 0.2f; 
-    if (shootClock.getElapsedTime().asSeconds() > cooldown) {
-        shootClock.restart();
-        sf::Vector2f pos = sprite.getPosition();
-        float angle = sprite.getRotation(); 
-        float rad = angle * 3.14159f / 180.f;
-        
-        // Spawn au "sommet" (le nez)
-        float offset = 50.f; 
-        pos.x += std::cos(rad) * offset;
-        pos.y += std::sin(rad) * offset;
-        
-        if (hasForceActive) {
-            return std::make_unique<Bullet>(pos.x, pos.y, angle, 1000.f, forceTexture);
-        } else {
-            return std::make_unique<Bullet>(pos.x, pos.y, angle, 800.f);
-        }
-    }
-    return nullptr;
+void Player::addWeapon(std::unique_ptr<Weapon> weapon) {
+    weapon->setPowerTexture(forceTexture);
+    weapons.push_back(std::move(weapon));
+}
+
+void Player::switchWeapon() {
+    if (weapons.empty()) return;
+    currentWeaponIndex = (currentWeaponIndex + 1) % weapons.size();
+    std::cout << "Arme changee : " << weapons[currentWeaponIndex]->getName() << std::endl;
+}
+
+void Player::reload() {
+    if (weapons.empty()) return;
+    weapons[currentWeaponIndex]->reload();
+    std::cout << "Rechargement de " << weapons[currentWeaponIndex]->getName() << "..." << std::endl;
+}
+
+void Player::shoot(sf::Vector2f pos, float angle) {
+    if (weapons.empty()) return;
+    
+    weapons[currentWeaponIndex]->fire(pos, angle, hasForceActive);
+}
+
+Weapon* Player::getCurrentWeapon() {
+    if (weapons.empty()) return nullptr;
+    return weapons[currentWeaponIndex].get();
 }
 
 void Player::move(float dx, float dy) {

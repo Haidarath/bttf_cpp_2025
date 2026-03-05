@@ -8,6 +8,7 @@
 #include "client/HelpMenu.hpp"
 #include "client/SettingsMenu.hpp"
 #include "client/Sounds.hpp"
+#include "client/SettingsPersistence.hpp"
 #include <iostream>
 #include <memory>
 
@@ -32,6 +33,15 @@ int main()
     sf::Clock heartbeatClock;
     sf::Clock deltaClock;
 
+    // Chargement des paramètres sauvegardés
+    GameSettings settings = SettingsPersistence::load();
+    Sounds::getInstance().setVolume(settings.volume);
+    
+    if (settings.isFullscreen) {
+        window.create(sf::VideoMode(1920, 1080), "BTTF Shooter", sf::Style::Fullscreen);
+    }
+    window.setFramerateLimit(60);
+
     Sounds::getInstance().playMusic("MENU");
 
     try {
@@ -44,7 +54,6 @@ int main()
         std::unique_ptr<WinMenu> winMenu = nullptr; 
         std::unique_ptr<HelpMenu> helpMenu = nullptr;
         std::unique_ptr<SettingsMenu> settingsMenu = nullptr;
-        bool isFullscreen = false;
         std::string selectedPlaneTexture = "";
 
         std::cout << "Entering main loop..." << std::endl;
@@ -129,18 +138,23 @@ int main()
                             if (action == MenuAction::VolumeUp) {
                                 std::cout << "Volume Up in Settings" << std::endl;
                                 Sounds::getInstance().adjustVolume(10.f);
+                                settings.volume = Sounds::getInstance().getVolume();
+                                SettingsPersistence::save(settings);
                             } else if (action == MenuAction::VolumeDown) {
                                 std::cout << "Volume Down in Settings" << std::endl;
                                 Sounds::getInstance().adjustVolume(-10.f);
+                                settings.volume = Sounds::getInstance().getVolume();
+                                SettingsPersistence::save(settings);
                             } else if (action == MenuAction::ToggleFullscreen) {
-                                isFullscreen = !isFullscreen;
-                                if (isFullscreen) {
+                                settings.isFullscreen = !settings.isFullscreen;
+                                if (settings.isFullscreen) {
                                     window.create(sf::VideoMode(1920, 1080), "BTTF Shooter", sf::Style::Fullscreen);
                                 } else {
                                     window.create(sf::VideoMode(1920, 1080), "BTTF Shooter", sf::Style::Titlebar | sf::Style::Close);
                                 }
                                 window.setFramerateLimit(60);
-                                std::cout << "Toggled fullscreen: " << isFullscreen << std::endl;
+                                std::cout << "Toggled fullscreen: " << settings.isFullscreen << std::endl;
+                                SettingsPersistence::save(settings);
                             } else if (action == MenuAction::None) {
                                 // BACK clicked
                                 Sounds::getInstance().playSound("BACK");

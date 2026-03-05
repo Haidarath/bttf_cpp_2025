@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include "client/Bullet.hpp"
+#include "client/Weapon.hpp"
 
 class Player {
 public:
@@ -15,11 +16,16 @@ public:
     void move(float dx, float dy);
     void setScale(float factor);
     
-    std::unique_ptr<Bullet> shoot();
+    void addWeapon(std::unique_ptr<Weapon> weapon);
+    void switchWeapon();
+    void reload();
+    void shoot(sf::Vector2f pos, float angle);
+    Weapon* getCurrentWeapon();
     void draw(sf::RenderWindow &window);
     
     sf::FloatRect getBounds() const;
     sf::Vector2f getPosition() const { return sprite.getPosition(); }
+    float getRotation() const { return sprite.getRotation(); }
     void setRotation(float angle) { sprite.setRotation(angle); }
     
     int getHp() const { return hp; }
@@ -42,7 +48,10 @@ private:
     
     int hp;
     sf::Clock invincibilityClock;
-    sf::Clock shootClock;
+    
+    std::vector<std::unique_ptr<Weapon>> weapons;
+    int currentWeaponIndex = 0;
+    
     bool hasLifeActive = false;
     bool hasForceActive = false;
     sf::Clock forceTimer;
